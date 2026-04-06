@@ -341,6 +341,7 @@
   "assistantEditVariableDate": "日期",
   "assistantEditVariableTime": "時間",
   "assistantEditVariableDatetime": "日期和時間",
+  "assistantEditVariableTimestamp": "時間戳",
   "assistantEditVariableModelId": "模型ID",
   "assistantEditVariableModelName": "模型名稱",
   "assistantEditVariableLocale": "語言環境",

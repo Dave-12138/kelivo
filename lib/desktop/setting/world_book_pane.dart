@@ -12,6 +12,7 @@ import '../../core/providers/world_book_provider.dart';
 import '../../icons/lucide_adapter.dart' as lucide;
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/ios_switch.dart';
+import '../../shared/widgets/placeholder_hints.dart';
 import '../../shared/widgets/snackbar.dart';
 import '../widgets/desktop_select_dropdown.dart';
 import '../../theme/app_font_weights.dart';
@@ -1350,15 +1351,60 @@ class _WorldBookEntryEditDialogState extends State<_WorldBookEntryEditDialog> {
                             child: _labeledField(
                               cs: cs,
                               label: l10n.worldBookEntryContentLabel,
-                              child: TextField(
-                                controller: _contentController,
-                                minLines: 12,
-                                maxLines: 18,
-                                keyboardType: TextInputType.multiline,
-                                decoration: _deskInputDecoration(context)
-                                    .copyWith(
-                                      hintText: l10n.worldBookEntryContentLabel,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextField(
+                                    controller: _contentController,
+                                    minLines: 12,
+                                    maxLines: 18,
+                                    keyboardType: TextInputType.multiline,
+                                    decoration: _deskInputDecoration(context)
+                                        .copyWith(
+                                          hintText: l10n.worldBookEntryContentLabel,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.assistantEditAvailableVariables,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: AppFontWeights.semibold,
                                     ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  PlaceholderHints(
+                                    items: [
+                                      (l10n.assistantEditVariableDate, '{cur_date}'),
+                                      (l10n.assistantEditVariableTime, '{cur_time}'),
+                                      (l10n.assistantEditVariableDatetime, '{cur_datetime}'),
+                                      (l10n.assistantEditVariableTimestamp, '{cur_timestamp}'),
+                                      (l10n.assistantEditVariableModelId, '{model_id}'),
+                                      (l10n.assistantEditVariableModelName, '{model_name}'),
+                                      (l10n.assistantEditVariableLocale, '{locale}'),
+                                      (l10n.assistantEditVariableTimezone, '{timezone}'),
+                                      (l10n.assistantEditVariableSystemVersion, '{system_version}'),
+                                      (l10n.assistantEditVariableDeviceInfo, '{device_info}'),
+                                      (l10n.assistantEditVariableBatteryLevel, '{battery_level}'),
+                                      (l10n.assistantEditVariableNickname, '{nickname}'),
+                                      (l10n.assistantEditVariableAssistantName, '{assistant_name}'),
+                                    ],
+                                    onTapVar: (v) {
+                                      final text = _contentController.text;
+                                      final sel = _contentController.selection;
+                                      final start = sel.start >= 0 && sel.start <= text.length
+                                          ? sel.start
+                                          : text.length;
+                                      final end = sel.end >= 0 && sel.end <= text.length && sel.end >= start
+                                          ? sel.end
+                                          : start;
+                                      _contentController.text = text.replaceRange(start, end, v);
+                                      _contentController.selection = TextSelection.collapsed(
+                                        offset: start + v.length,
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           );
