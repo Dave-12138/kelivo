@@ -991,18 +991,27 @@ class MessageBuilderService {
   /// Inject instruction injection prompts into apiMessages.
   Future<void> injectInstructionPrompts(
     List<Map<String, dynamic>> apiMessages,
-    String? assistantId,
+    Assistant? assistant,
   ) async {
     try {
+      final assistantId = assistant?.id;
       List<InstructionInjection> actives = const <InstructionInjection>[];
       try {
         final ip = contextProvider.read<InstructionInjectionProvider>();
         await ip.initialize();
         actives = ip.activesFor(assistantId);
       } catch (_) {}
+      final vars = PromptTransformer.buildPlaceholders(
+        context: contextProvider,
+        assistant: assistant!,
+        modelId: "",
+        modelName: "",
+        userNickname: contextProvider.read<UserProvider>().name,
+      );
       final prompts = actives
           .map((e) => e.prompt.trim())
           .where((p) => p.isNotEmpty)
+          .map((e) => PromptTransformer.replacePlaceholders(e, vars))
           .toList(growable: false);
       if (prompts.isNotEmpty) {
         final lp = prompts.join('\n\n');
@@ -1014,9 +1023,10 @@ class MessageBuilderService {
   /// Inject world book (lorebook) entries into apiMessages.
   Future<void> injectWorldBookPrompts(
     List<Map<String, dynamic>> apiMessages,
-    String? assistantId,
+    Assistant? assistant,
   ) async {
     try {
+      final assistantId = assistant?.id;
       List<WorldBook> all = const <WorldBook>[];
       List<String> activeBookIds = const <String>[];
 
@@ -1110,10 +1120,18 @@ class MessageBuilderService {
 
       String wrapSystemTag(String content) => '<system>\n$content\n</system>';
 
+      final vars = PromptTransformer.buildPlaceholders(
+        context: contextProvider,
+        assistant: assistant!,
+        modelId: "",
+        modelName: "",
+        userNickname: contextProvider.read<UserProvider>().name,
+      );
       String joinContents(Iterable<WorldBookEntry> items) {
         return items
             .map((e) => e.content.trim())
             .where((c) => c.isNotEmpty)
+            .map((e) => PromptTransformer.replacePlaceholders(e, vars))
             .join('\n');
       }
 

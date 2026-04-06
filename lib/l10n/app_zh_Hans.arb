@@ -382,6 +382,7 @@
   "assistantEditVariableDate": "日期",
   "assistantEditVariableTime": "时间",
   "assistantEditVariableDatetime": "日期和时间",
+  "assistantEditVariableTimestamp": "时间戳",
   "assistantEditVariableModelId": "模型ID",
   "assistantEditVariableModelName": "模型名称",
   "assistantEditVariableLocale": "语言环境",

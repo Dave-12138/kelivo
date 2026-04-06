@@ -382,11 +382,12 @@ class _PromptTabState extends State<_PromptTab> {
               ),
             ),
             const SizedBox(height: 4),
-            _VarExplainList(
+            PlaceholderHints(
               items: [
                 (l10n.assistantEditVariableDate, '{cur_date}'),
                 (l10n.assistantEditVariableTime, '{cur_time}'),
                 (l10n.assistantEditVariableDatetime, '{cur_datetime}'),
+                (l10n.assistantEditVariableTimestamp, '{cur_timestamp}'),
                 (l10n.assistantEditVariableModelId, '{model_id}'),
                 (l10n.assistantEditVariableModelName, '{model_name}'),
                 (l10n.assistantEditVariableLocale, '{locale}'),
@@ -523,7 +524,7 @@ class _PromptTabState extends State<_PromptTab> {
               ),
             ),
             const SizedBox(height: 4),
-            _VarExplainList(
+            PlaceholderHints(
               items: [
                 (l10n.assistantEditVariableRole, '{{ role }}'),
                 (l10n.assistantEditVariableMessage, '{{ message }}'),

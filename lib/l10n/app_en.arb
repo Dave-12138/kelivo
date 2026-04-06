@@ -536,6 +536,7 @@
   "assistantEditVariableDate": "Date",
   "assistantEditVariableTime": "Time",
   "assistantEditVariableDatetime": "Datetime",
+  "assistantEditVariableTimestamp": "Timestamp",
   "assistantEditVariableModelId": "Model ID",
   "assistantEditVariableModelName": "Model Name",
   "assistantEditVariableLocale": "Locale",
