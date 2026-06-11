@@ -1127,6 +1127,21 @@ class MessageBuilderService {
         modelName: "",
         userNickname: contextProvider.read<UserProvider>().name,
       );
+      if (assistant.enableMemory == true) {
+        final mp = contextProvider.read<MemoryProvider>();
+        await mp.initialize();
+        final mems = mp.getForAssistant(assistant!.id);
+        final buf = StringBuffer();
+        buf.writeln('<memories>');
+        for (final m in mems) {
+          buf.writeln('<record>');
+          buf.writeln('<id>${m.id}</id>');
+          buf.writeln('<content>${m.content}</content>');
+          buf.writeln('</record>');
+        }
+        buf.writeln('</memories>');
+        vars["{memories}"] = buf.toString();
+      }
       String joinContents(Iterable<WorldBookEntry> items) {
         return items
             .map((e) => e.content.trim())
