@@ -60,7 +60,7 @@ const _assistantId = 'assistant-prompt-time-test';
 const _warningEn =
     'Using time variables in the system prompt makes the beginning of every request different';
 
-const _formatExample = '<current_time>Sat 2026-08-08 14:30:05</current_time>';
+const _formatExample = '<current_time>Sat 2026-08-08 14:30:05.000</current_time>';
 
 Future<
   ({
