@@ -494,9 +494,11 @@ Input:
     'Sun',
   ];
 
-  /// Wraps [timestamp] as `<current_time>EEE yyyy-MM-dd HH:mm:ss</current_time>`
+  /// Wraps [timestamp] as
+  /// `<current_time>EEE yyyy-MM-dd HH:mm:ss.SSS</current_time>`
   /// in the local timezone, without a UTC offset (§9.1) by default.
-  /// With [useIso8601], emits ISO 8601 to seconds with a UTC offset.
+  /// With [useIso8601], emits ISO 8601 with the same fractional seconds and
+  /// a UTC offset.
   ///
   /// Four-digit year avoids `yy-MM-dd` / `dd-MM-yy` ambiguity (e.g. 22–26).
   static String formatCurrentTimeTag(
@@ -511,16 +513,17 @@ Input:
     final hh = local.hour.toString().padLeft(2, '0');
     final min = local.minute.toString().padLeft(2, '0');
     final ss = local.second.toString().padLeft(2, '0');
+    final ms = local.millisecond.toString().padLeft(3, '0');
     if (useIso8601) {
       final offset = local.timeZoneOffset;
       final sign = offset.isNegative ? '-' : '+';
       final minutes = offset.inMinutes.abs();
       final offsetHours = (minutes ~/ 60).toString().padLeft(2, '0');
       final offsetMinutes = (minutes % 60).toString().padLeft(2, '0');
-      return '<current_time>${yyyy.padLeft(4, '0')}-$mm-${dd}T$hh:$min:$ss'
+      return '<current_time>${yyyy.padLeft(4, '0')}-$mm-${dd}T$hh:$min:$ss.$ms'
           '$sign$offsetHours:$offsetMinutes</current_time>';
     }
-    return '<current_time>$eee $yyyy-$mm-$dd $hh:$min:$ss</current_time>';
+    return '<current_time>$eee $yyyy-$mm-$dd $hh:$min:$ss.$ms</current_time>';
   }
 
   /// Returns which of `{cur_date}`, `{cur_time}`, `{cur_datetime}` occur in
