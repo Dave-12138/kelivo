@@ -8,7 +8,7 @@ import 'package:Kelivo/core/services/memory/memory_prompts.dart';
 
 void main() {
   group('formatCurrentTimeTag (§9.1)', () {
-    test('ISO 8601 includes signed offsets, fractional hours and DST', () {
+    test('ISO 8601 offsets, fractional hours, ms and DST', () {
       tz_data.initializeTimeZones();
       for (final sample in [
         ('Asia/Shanghai', 1, '+08:00'),
@@ -27,6 +27,7 @@ void main() {
           9,
           8,
           7,
+          123,
         );
         final month = sample.$2.toString().padLeft(2, '0');
         final formatted = MemoryPrompts.formatCurrentTimeTag(
@@ -35,7 +36,7 @@ void main() {
         );
         expect(
           formatted,
-          '<current_time>2026-$month-05T09:08:07${sample.$3}</current_time>',
+          '<current_time>2026-$month-05T09:08:07.123${sample.$3}</current_time>',
         );
         final value = formatted.replaceAll(RegExp(r'</?current_time>'), '');
         expect(DateTime.parse(value).isAtSameMomentAs(timestamp), isTrue);
@@ -70,7 +71,7 @@ void main() {
         expect(monday.weekday, DateTime.monday);
         expect(
           MemoryPrompts.formatCurrentTimeTag(monday),
-          '<current_time>Mon 2026-08-03 14:03:22</current_time>',
+          '<current_time>Mon 2026-08-03 14:03:22.000</current_time>',
         );
 
         final samples = <DateTime, String>{
@@ -92,17 +93,28 @@ void main() {
           MemoryPrompts.formatCurrentTimeTag(
             DateTime(2025, 12, 31, 23, 59, 59),
           ),
-          '<current_time>Wed 2025-12-31 23:59:59</current_time>',
+          '<current_time>Wed 2025-12-31 23:59:59.000</current_time>',
         );
         expect(
           MemoryPrompts.formatCurrentTimeTag(DateTime(2026, 1, 1, 0, 0, 1)),
-          '<current_time>Thu 2026-01-01 00:00:01</current_time>',
+          '<current_time>Thu 2026-01-01 00:00:01.000</current_time>',
         );
 
         // Single-digit month and day are zero-padded.
         expect(
           MemoryPrompts.formatCurrentTimeTag(DateTime(2026, 3, 5, 9, 8, 7)),
-          '<current_time>Thu 2026-03-05 09:08:07</current_time>',
+          '<current_time>Thu 2026-03-05 09:08:07.000</current_time>',
+        );
+
+        // Milliseconds keep distinct turns apart within the same second.
+        final withMs = DateTime(2026, 8, 8, 14, 30, 5, 123);
+        expect(
+          MemoryPrompts.formatCurrentTimeTag(withMs),
+          '<current_time>Sat 2026-08-08 14:30:05.123</current_time>',
+        );
+        expect(
+          MemoryPrompts.formatCurrentTimeTag(withMs, useIso8601: true),
+          startsWith('<current_time>2026-08-08T14:30:05.123'),
         );
       },
     );
