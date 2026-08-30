@@ -1,0 +1,2 @@
+# Force LF line endings repo-wide (workspace convention; see ~/.dsh/AGENTS.md).
+* text=auto eol=lf
