@@ -101,36 +101,27 @@ void main() {
     );
   }
 
-  test(
-    'bind writes extras and sets assistant default when different',
-    () async {
-      final conversation = await chat.createConversation(
-        title: 'Chat',
-        assistantId: 'asst-1',
-      );
-      final workspace = sampleWorkspace('ws-new');
-      final actions = WorkspaceBindingActions(
-        chat: chat,
-        assistants: assistants,
-      );
+  test('bind writes extras without touching the assistant default', () async {
+    final conversation = await chat.createConversation(
+      title: 'Chat',
+      assistantId: 'asst-1',
+    );
+    final actions = WorkspaceBindingActions(chat: chat);
 
-      final result = await actions.bind(
-        conversationId: conversation.id,
-        workspace: workspace,
-      );
+    await actions.bind(
+      conversationId: conversation.id,
+      workspace: sampleWorkspace('ws-new'),
+    );
 
-      expect(result.assistantDefaultChanged, isTrue);
-      expect(result.assistantName, 'Alpha');
-      final extras = chat.getConversation(conversation.id)!.extras;
-      final binding = WorkspaceBinding.fromExtras(extras);
-      expect(binding.workspaceId, 'ws-new');
-      expect(binding.cwd, 'src');
-      expect(assistants.getById('asst-1')!.defaultWorkspaceId, 'ws-new');
-      expect(assistants.getById('asst-2')!.defaultWorkspaceId, 'ws-keep');
-    },
-  );
+    final extras = chat.getConversation(conversation.id)!.extras;
+    final binding = WorkspaceBinding.fromExtras(extras);
+    expect(binding.workspaceId, 'ws-new');
+    expect(binding.cwd, 'src');
+    expect(assistants.getById('asst-1')!.defaultWorkspaceId, isNull);
+    expect(assistants.getById('asst-2')!.defaultWorkspaceId, 'ws-keep');
+  });
 
-  test('bind does not report a change when default is already equal', () async {
+  test('bind keeps an existing assistant default unchanged', () async {
     await assistants.updateAssistant(
       assistants.getById('asst-1')!.copyWith(defaultWorkspaceId: 'ws-same'),
     );
@@ -138,14 +129,13 @@ void main() {
       title: 'Chat',
       assistantId: 'asst-1',
     );
-    final actions = WorkspaceBindingActions(chat: chat, assistants: assistants);
+    final actions = WorkspaceBindingActions(chat: chat);
 
-    final result = await actions.bind(
+    await actions.bind(
       conversationId: conversation.id,
-      workspace: sampleWorkspace('ws-same', cwd: 'lib'),
+      workspace: sampleWorkspace('ws-other', cwd: 'lib'),
     );
 
-    expect(result.assistantDefaultChanged, isFalse);
     expect(assistants.getById('asst-1')!.defaultWorkspaceId, 'ws-same');
     expect(
       WorkspaceBinding.fromExtras(
@@ -163,7 +153,7 @@ void main() {
       title: 'Chat',
       assistantId: 'asst-1',
     );
-    final actions = WorkspaceBindingActions(chat: chat, assistants: assistants);
+    final actions = WorkspaceBindingActions(chat: chat);
     await actions.bind(
       conversationId: conversation.id,
       workspace: sampleWorkspace('ws-bound'),
@@ -198,14 +188,13 @@ void main() {
   test('conversation without an assistant binds without error', () async {
     final conversation = await chat.createConversation(title: 'Orphan');
     expect(conversation.assistantId, isNull);
-    final actions = WorkspaceBindingActions(chat: chat, assistants: assistants);
+    final actions = WorkspaceBindingActions(chat: chat);
 
-    final result = await actions.bind(
+    await actions.bind(
       conversationId: conversation.id,
       workspace: sampleWorkspace('ws-orphan'),
     );
 
-    expect(result.assistantDefaultChanged, isFalse);
     expect(
       WorkspaceBinding.fromExtras(
         chat.getConversation(conversation.id)!.extras,

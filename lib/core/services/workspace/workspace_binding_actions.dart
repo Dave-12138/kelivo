@@ -9,17 +9,6 @@ import 'package:Kelivo/core/services/chat/chat_service.dart';
 import 'package:Kelivo/l10n/app_localizations.dart';
 import 'package:Kelivo/shared/widgets/snackbar.dart';
 
-/// Result of writing a conversation workspace binding.
-class WorkspaceBindResult {
-  const WorkspaceBindResult({
-    required this.assistantDefaultChanged,
-    this.assistantName,
-  });
-
-  final bool assistantDefaultChanged;
-  final String? assistantName;
-}
-
 /// Conversation extras applied when starting a chat with [assistant].
 Map<String, dynamic> workspaceExtrasForNewConversation({
   required Assistant? assistant,
@@ -39,14 +28,16 @@ Map<String, dynamic> workspaceExtrasForNewConversation({
   ).applyTo({});
 }
 
-/// Writes conversation extras and optionally the assistant default.
+/// Writes the per-conversation workspace binding.
+///
+/// Binding is conversation-scoped: it never touches
+/// [Assistant.defaultWorkspaceId], which assistant settings own.
 class WorkspaceBindingActions {
-  WorkspaceBindingActions({required this.chat, this.assistants});
+  WorkspaceBindingActions({required this.chat});
 
   final ChatService chat;
-  final AssistantProvider? assistants;
 
-  Future<WorkspaceBindResult> bind({
+  Future<void> bind({
     required String conversationId,
     required Workspace workspace,
   }) async {
@@ -56,26 +47,6 @@ class WorkspaceBindingActions {
         workspaceId: workspace.id,
         cwd: workspace.defaultCwd,
       ).applyTo,
-    );
-    final conversation = chat.getConversation(conversationId);
-    final assistantId = conversation?.assistantId;
-    final assistants = this.assistants;
-    if (assistants == null || assistantId == null || assistantId.isEmpty) {
-      return const WorkspaceBindResult(assistantDefaultChanged: false);
-    }
-    final assistant = assistants.getById(assistantId);
-    if (assistant == null) {
-      return const WorkspaceBindResult(assistantDefaultChanged: false);
-    }
-    if (assistant.defaultWorkspaceId == workspace.id) {
-      return const WorkspaceBindResult(assistantDefaultChanged: false);
-    }
-    await assistants.updateAssistant(
-      assistant.copyWith(defaultWorkspaceId: workspace.id),
-    );
-    return WorkspaceBindResult(
-      assistantDefaultChanged: true,
-      assistantName: assistant.name,
     );
   }
 
@@ -106,19 +77,9 @@ Future<void> bindConversationWorkspace(
   required String conversationId,
   required Workspace workspace,
 }) async {
-  final result = await WorkspaceBindingActions(
+  await WorkspaceBindingActions(
     chat: context.read<ChatService>(),
-    assistants: context.read<AssistantProvider>(),
   ).bind(conversationId: conversationId, workspace: workspace);
-  if (!result.assistantDefaultChanged || !context.mounted) return;
-  final l10n = AppLocalizations.of(context)!;
-  showAppSnackBar(
-    context,
-    message: l10n.workspaceBindingSetAssistantDefault(
-      result.assistantName ?? '',
-    ),
-    type: NotificationType.info,
-  );
 }
 
 Future<void> unbindConversationWorkspace(
@@ -136,3 +97,4 @@ Future<void> unbindConversationWorkspace(
     type: NotificationType.info,
   );
 }
+

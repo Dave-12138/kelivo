@@ -11,6 +11,7 @@ Kelivo is a cross-platform LLM chat client built with Flutter, targeting iOS, An
 - **State management**: Provider (`lib/core/providers/`).
 - **Database**: Drift (`lib/core/database/`). Schema versions tracked in `drift_schemas/`.
 - **Localization**: ARB-based (`lib/l10n/`), English template (`app_en.arb`). Run `flutter gen-l10n` after editing ARB files and commit the generated output.
+- **Workspace binding is conversation-scoped**: `WorkspaceBindingActions.bind()` writes only the conversation extras and must never write `Assistant.defaultWorkspaceId`; that default is owned by assistant settings.
 
 ## Pre-commit checklist
 
