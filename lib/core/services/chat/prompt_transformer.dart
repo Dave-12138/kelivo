@@ -19,6 +19,7 @@ class PromptTransformer {
     final time =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final dt = '$date $time';
+    final timestamp = now.microsecondsSinceEpoch.toString();
     final os = Platform.operatingSystem;
     final osv = Platform.operatingSystemVersion;
     final device =
@@ -29,6 +30,7 @@ class PromptTransformer {
       '{cur_date}': date,
       '{cur_time}': time,
       '{cur_datetime}': dt,
+      '{cur_timestamp}': timestamp,
       '{model_id}': modelId ?? '',
       '{model_name}': modelName ?? (modelId ?? ''),
       '{locale}': locale,

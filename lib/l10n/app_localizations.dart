@@ -2500,6 +2500,12 @@ abstract class AppLocalizations {
   /// **'Datetime'**
   String get assistantEditVariableDatetime;
 
+  /// No description provided for @assistantEditVariableTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get assistantEditVariableTimestamp;
+
   /// Variable list entry for the current model ID placeholder, shown with its token {model_id}.
   ///
   /// In en, this message translates to:
