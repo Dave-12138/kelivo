@@ -206,21 +206,23 @@ class MessageGenerationService {
       providerKey,
       modelId,
     );
-    messageBuilderService.injectSearchPrompt(
-      apiMessages,
-      settings,
-      assistant,
-      hasBuiltInSearch,
-    );
+    // messageBuilderService.injectSearchPrompt(
+    //   apiMessages,
+    //   settings,
+    //   assistant,
+    //   hasBuiltInSearch,
+    // );
     await messageBuilderService.injectInstructionPrompts(
       apiMessages,
       assistantId,
+      assistant: assistant,
       conversation: promptConversation,
       conversationScoped: assistant?.allowConversationPromptInjection ?? false,
     );
     await messageBuilderService.injectWorldBookPrompts(
       apiMessages,
       assistantId,
+      assistant: assistant,
       conversation: promptConversation,
       conversationScoped: assistant?.allowConversationPromptInjection ?? false,
       sourceMessages: messageBuilderService.collapseVersions(
