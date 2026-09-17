@@ -2041,13 +2041,14 @@ class MessageBuilderService {
   Future<void> injectInstructionPrompts(
     List<Map<String, dynamic>> apiMessages,
     String? assistantId, {
+    Assistant? assistant,
     Conversation? conversation,
     bool conversationScoped = false,
   }) async {
     try {
       final ip = contextProvider.read<InstructionInjectionProvider>();
       await ip.initialize();
-      final prompt = ip.promptFor(
+      final raw = ip.promptFor(
         assistantId,
         instructionIds: conversationScoped
             ? ConversationPromptSettings.fromExtras(
@@ -2055,13 +2056,22 @@ class MessageBuilderService {
               ).instructionIds
             : null,
       );
-      if (prompt.isNotEmpty) {
-        _appendToSystemMessage(
-          apiMessages,
-          prompt,
-          source: ContextSource.instructionInjection,
-        );
-      }
+      if (raw.isEmpty) return;
+      final vars = assistant == null
+          ? const <String, String>{}
+          : PromptTransformer.buildPlaceholders(
+              context: contextProvider,
+              assistant: assistant,
+              modelId: "",
+              modelName: "",
+              userNickname: contextProvider.read<UserProvider>().name,
+            );
+      final prompt = PromptTransformer.replacePlaceholders(raw, vars);
+      _appendToSystemMessage(
+        apiMessages,
+        prompt,
+        source: ContextSource.instructionInjection,
+      );
     } catch (_) {}
   }
 
@@ -2141,6 +2151,7 @@ class MessageBuilderService {
   Future<void> injectWorldBookPrompts(
     List<Map<String, dynamic>> apiMessages,
     String? assistantId, {
+    Assistant? assistant,
     Conversation? conversation,
     bool conversationScoped = false,
     List<ChatMessage>? sourceMessages,
@@ -2249,10 +2260,20 @@ class MessageBuilderService {
 
       String wrapSystemTag(String content) => '<system>\n$content\n</system>';
 
+      final vars = assistant == null
+          ? const <String, String>{}
+          : PromptTransformer.buildPlaceholders(
+              context: contextProvider,
+              assistant: assistant,
+              modelId: "",
+              modelName: "",
+              userNickname: contextProvider.read<UserProvider>().name,
+            );
       String joinContents(Iterable<WorldBookEntry> items) {
         return items
             .map((e) => e.content.trim())
             .where((c) => c.isNotEmpty)
+            .map((e) => PromptTransformer.replacePlaceholders(e, vars))
             .join('\n');
       }
 

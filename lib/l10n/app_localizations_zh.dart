@@ -1263,6 +1263,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get assistantEditVariableDatetime => '日期和时间';
 
   @override
+  String get assistantEditVariableTimestamp => '时间戳';
+
+  @override
   String get assistantEditVariableModelId => '模型ID';
 
   @override
@@ -13710,6 +13713,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get assistantEditVariableDatetime => '日期和时间';
 
   @override
+  String get assistantEditVariableTimestamp => '时间戳';
+
+  @override
   String get assistantEditVariableModelId => '模型ID';
 
   @override
@@ -26081,6 +26087,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get assistantEditVariableDatetime => '日期和時間';
+
+  @override
+  String get assistantEditVariableTimestamp => '時間戳';
 
   @override
   String get assistantEditVariableModelId => '模型ID';
