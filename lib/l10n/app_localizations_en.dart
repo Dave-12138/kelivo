@@ -1316,6 +1316,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assistantEditVariableDatetime => 'Datetime';
 
   @override
+  String get assistantEditVariableTimestamp => 'Timestamp';
+
+  @override
   String get assistantEditVariableModelId => 'Model ID';
 
   @override
