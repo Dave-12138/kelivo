@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../../core/models/instruction_injection.dart';
 import '../../core/providers/instruction_injection_group_provider.dart';
 import '../../core/providers/instruction_injection_provider.dart';
+import '../../shared/widgets/placeholder_hints.dart';
 import '../../shared/widgets/snackbar.dart';
 import '../../theme/app_font_weights.dart';
 import 'package:Kelivo/theme/app_semantic_colors.dart';
@@ -506,6 +507,46 @@ class _InstructionInjectionEditDialogState
                     decoration: _deskInputDecoration(
                       context,
                     ).copyWith(hintText: l10n.instructionInjectionPromptLabel),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.assistantEditAvailableVariables,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: AppFontWeights.semibold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  PlaceholderHints(
+                    items: [
+                      (l10n.assistantEditVariableDate, '{cur_date}'),
+                      (l10n.assistantEditVariableTime, '{cur_time}'),
+                      (l10n.assistantEditVariableDatetime, '{cur_datetime}'),
+                      (l10n.assistantEditVariableTimestamp, '{cur_timestamp}'),
+                      (l10n.assistantEditVariableModelId, '{model_id}'),
+                      (l10n.assistantEditVariableModelName, '{model_name}'),
+                      (l10n.assistantEditVariableLocale, '{locale}'),
+                      (l10n.assistantEditVariableTimezone, '{timezone}'),
+                      (l10n.assistantEditVariableSystemVersion, '{system_version}'),
+                      (l10n.assistantEditVariableDeviceInfo, '{device_info}'),
+                      (l10n.assistantEditVariableBatteryLevel, '{battery_level}'),
+                      (l10n.assistantEditVariableNickname, '{nickname}'),
+                      (l10n.assistantEditVariableAssistantName, '{assistant_name}'),
+                    ],
+                    onTapVar: (v) {
+                      final text = _promptController.text;
+                      final sel = _promptController.selection;
+                      final start = sel.start >= 0 && sel.start <= text.length
+                          ? sel.start
+                          : text.length;
+                      final end = sel.end >= 0 && sel.end <= text.length && sel.end >= start
+                          ? sel.end
+                          : start;
+                      _promptController.text = text.replaceRange(start, end, v);
+                      _promptController.selection = TextSelection.collapsed(
+                        offset: start + v.length,
+                      );
+                    },
                   ),
                 ],
               ),
