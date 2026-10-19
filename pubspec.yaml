@@ -163,6 +163,12 @@ dev_dependencies:
   url_launcher_platform_interface: ^2.3.2
   vm_service: ^15.3.0
 dependency_overrides:
+  # shared_preferences_android 2.5.0 moved to a Pigeon-JNI backend. R8 renames
+  # kotlin.coroutines.Continuation in release builds, so the JNI lookup of
+  # SharedPreferencesApiRegistrar.getAll throws NoSuchMethodError at startup.
+  # Flutter 3.47 release APKs therefore crash before runApp(). Drop this pin once
+  # the plugin ships consumer ProGuard rules (flutter/flutter#194649).
+  shared_preferences_android: ">=2.4.28 <2.5.0"
   # Prevent the location from being accessed continuously on Windows
   permission_handler_windows:
     path: ./dependencies/flutter-permission-handler/permission_handler_windows
