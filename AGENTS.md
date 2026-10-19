@@ -60,6 +60,31 @@ flutter test test/perf/timeline_scroll_bench.dart
 
 Several packages live under `dependencies/` and are referenced by path in `pubspec.yaml` (e.g. `markstream`, `mcp_client`, `flutter_tts`, `flutter_math_fork`, `downsize`). The analyzer excludes `dependencies/flutter_math_fork/**` and `dependencies/flutter_tts/**`.
 
+## Android release signing
+
+`android/app/build.gradle.kts` only attaches a release signing config when
+`android/key.properties` exists; otherwise `flutter build apk --release` emits an
+unsigned APK. Gradle resolves `storeFile` relative to the `app` module, so
+`storeFile=key.jks` means `android/app/key.jks`, while the properties file lives
+at `android/key.properties`.
+
+The Android job in every `build*.yml` decodes four repo secrets —
+`SIGN_KEYSTORE_BASE64` (base64 of the `.jks`), `KEYSTORE_PASSWORD`, `KEY_ALIAS`,
+`KEY_PASSWORD` — and is gated by `if: env.SIGN_KEYSTORE_BASE64 != ''`. The runner
+merges a step's own `env:` into the `env` context before evaluating that step's
+`if`, so this works; what is *not* allowed in a step `if` is `secrets.*`. Forks
+must set the secrets themselves, and environment secrets only reach a job that
+declares `environment:`.
+
+## Pinned native dependency workarounds
+
+`dependency_overrides` in `pubspec.yaml` pins native implementations for
+compatibility: `sherpa_onnx_*` (macOS deployment target) and
+`shared_preferences_android` below 2.5.0 (2.5.0's Pigeon-JNI backend throws
+`NoSuchMethodError` on `SharedPreferencesApiRegistrar.getAll` in R8 release
+builds, killing Android startup — flutter/flutter#194649). Remove each pin once
+the upstream package ships a fix.
+
 ## Useful commands
 
 ```bash
