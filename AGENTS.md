@@ -1,8 +1,40 @@
-# AFENTS.md
+# AGENTS.md
 
 ## Project overview
 
 Kelivo is a cross-platform LLM chat client built with Flutter, targeting iOS, Android, macOS, Windows, and Linux. Package name is `Kelivo` — imports use `package:Kelivo/...`.
+
+## Fork workflow
+
+This checkout is a fork of `Chevey339/kelivo`: `origin` points at upstream,
+`myfork` at `Dave-12138/kelivo`. Development happens on `for-temp-use`, the
+fork's main branch, which is periodically rebased onto `origin/master`. Its
+commit hashes therefore change, and rebase conflicts come from changes that
+overlap upstream edits, so keep commits small and localized. Do not rebase,
+reset, or push `for-temp-use`; the branch owner maintains it.
+
+## No local Flutter toolchain
+
+`flutter` and `dart` are not installed in this environment, so nothing can be
+built, tested, formatted, or generated locally: `dart format`, `dart analyze`,
+`flutter test`, `flutter pub get`, `flutter gen-l10n`, and
+`dart run build_runner build` are all unavailable. There is no `gh` CLI and no
+GitHub token either.
+
+Every check and every build runs in GitHub Actions on the fork:
+
+- `pr-check.yml` runs on pull requests targeting `master` and covers the format
+  check on changed Dart files, `flutter gen-l10n` with a clean `lib/l10n`
+  diff, an untranslated-message check, `dart analyze --fatal-infos`,
+  `flutter test`, and the same analyze/test pair for `dependencies/markstream`.
+- `build.yml`, `build-stable*.yml`, and `build-linux-arm64.yml` only run
+  through manual `workflow_dispatch`. They produce the Android, iOS, macOS,
+  Windows, and Linux artifacts and optionally publish a release.
+
+A commit on `for-temp-use` triggers no workflow until a pull request is opened
+or a build workflow is dispatched, and an agent can neither push nor read the
+run results. Read the code carefully instead, and state what still needs
+verification rather than claiming that analysis or tests passed.
 
 ## Architecture
 
@@ -10,14 +42,17 @@ Kelivo is a cross-platform LLM chat client built with Flutter, targeting iOS, An
 - **Desktop / mobile split**: most UI pages have separate desktop and mobile layouts (e.g. `home_desktop_layout.dart` / `home_mobile_layout.dart`). Desktop-only code lives in `lib/desktop/`. Use `ResponsiveHelper` from `lib/shared/responsive/` to branch by screen type.
 - **State management**: Provider (`lib/core/providers/`).
 - **Database**: Drift (`lib/core/database/`). Schema versions tracked in `drift_schemas/`.
-- **Localization**: edit `lib/l10n/app_en.arb` and `app_zh.arb` for product changes. Give every English key an `@key.description` explaining its UI location, meaning, and placeholders; update that description when the meaning changes. Keep both source key sets identical. Run `python3 tool/l10n/translate.py sync`, then `python3 tool/l10n/translate.py check`; commit the translated ARBs, translation state, and generated Dart output. The tool synchronizes `app_zh_Hans.arb` and translates the other languages from both sources plus the descriptions. For credentials, adding languages, or translation corrections, read [the localization workflow](tool/l10n/README.md). Inspect affected keys and tool summaries instead of loading every language file into the agent context.
+- **Localization**: edit `lib/l10n/app_en.arb` and `app_zh.arb` for product changes. Give every English key an `@key.description` explaining its UI location, meaning, and placeholders; update that description when the meaning changes. Keep both source key sets identical. Run `python3 tool/l10n/translate.py sync`, then `python3 tool/l10n/translate.py check`; commit the translated ARBs, translation state, and generated Dart output. The tool synchronizes `app_zh_Hans.arb` and translates the other languages from both sources plus the descriptions. For credentials, adding languages, or translation corrections, read [the localization workflow](tool/l10n/README.md). Inspect affected keys and tool summaries instead of loading every language file into the agent context. The generated `app_localizations*.dart` is committed alongside the ARB files, and CI rejects any diff under `lib/l10n`.
 
 ## Pre-commit checklist
 
-Format changed Dart files with `dart format`, including files under `lib/`,
-`test/`, `integration_test/`, `tool/`, `dependencies/markstream/lib/`, and
-`dependencies/markstream/test/`. For code changes, run static analysis before
-committing:
+The commands below need a Flutter/Dart SDK and run in CI or on a machine that
+has one, not in this environment. Since `dart format` cannot run here, match the
+formatting of the surrounding code by hand; CI runs
+`dart format --set-exit-if-changed` on changed files under `lib/`, `test/`,
+`integration_test/`, `tool/`, `dependencies/markstream/lib/`, and
+`dependencies/markstream/test/`, and fails on any difference. For code changes,
+run static analysis before committing:
 
 ```bash
 flutter pub get --directory tool/l10n --enforce-lockfile
@@ -39,8 +74,19 @@ flutter test
 ```
 
 All required checks must pass. Documentation-only changes do not require Dart
-analysis or Flutter tests. CI (`pr-check.yml`) still runs static analysis and
-the full test suites for both packages on every PR.
+analysis or Flutter tests. CI (`pr-check.yml`) runs static analysis and the
+full test suites for both packages on every pull request targeting `master`.
+
+## Generated output
+
+`pubspec.lock` records a `sha256` for every package and CI installs with
+`flutter pub get --enforce-lockfile`, so a dependency change needs a lockfile
+regenerated by the Flutter SDK. The same holds for the Drift code and the
+`drift_schemas/app_database` export (`dart run build_runner build`) and for
+`lib/l10n/app_localizations*.dart`. When a change touches `pubspec.yaml`, Drift
+table definitions, or ARB files, hand the regeneration to the user; only
+`app_localizations*.dart` is small enough to update by hand from the ARB
+source.
 
 ## Benchmarks are not tests
 
@@ -81,3 +127,5 @@ flutter pub get                             # install dependencies
 flutter gen-l10n                            # regenerate l10n files
 dart run build_runner build                 # regenerate Drift code
 ```
+
+All three require a Flutter SDK that this environment does not provide.
