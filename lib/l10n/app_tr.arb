@@ -398,6 +398,7 @@
   "assistantEditVariableDate": "Tarih",
   "assistantEditVariableTime": "Saat",
   "assistantEditVariableDatetime": "Tarih ve saat",
+  "assistantEditVariableTimestamp": "Zaman damgası",
   "assistantEditVariableModelId": "Model Kimliği",
   "assistantEditVariableModelName": "Model Adı",
   "assistantEditVariableLocale": "Yerel Ayar",

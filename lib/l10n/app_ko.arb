@@ -398,6 +398,7 @@
   "assistantEditVariableDate": "날짜",
   "assistantEditVariableTime": "시간",
   "assistantEditVariableDatetime": "날짜 및 시간",
+  "assistantEditVariableTimestamp": "타임스탬프",
   "assistantEditVariableModelId": "모델 ID",
   "assistantEditVariableModelName": "모델 이름",
   "assistantEditVariableLocale": "로캘",

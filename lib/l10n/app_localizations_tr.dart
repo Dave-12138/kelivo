@@ -1314,6 +1314,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get assistantEditVariableDatetime => 'Tarih ve saat';
 
   @override
+  String get assistantEditVariableTimestamp => 'Zaman damgası';
+
+  @override
   String get assistantEditVariableModelId => 'Model Kimliği';
 
   @override

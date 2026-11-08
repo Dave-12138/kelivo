@@ -398,6 +398,7 @@
   "assistantEditVariableDate": "Дата",
   "assistantEditVariableTime": "Время",
   "assistantEditVariableDatetime": "Дата и время",
+  "assistantEditVariableTimestamp": "Отметка времени",
   "assistantEditVariableModelId": "ID модели",
   "assistantEditVariableModelName": "Название модели",
   "assistantEditVariableLocale": "Язык и регион",

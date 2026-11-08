@@ -1333,6 +1333,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get assistantEditVariableDatetime => 'Дата и время';
 
   @override
+  String get assistantEditVariableTimestamp => 'Отметка времени';
+
+  @override
   String get assistantEditVariableModelId => 'ID модели';
 
   @override

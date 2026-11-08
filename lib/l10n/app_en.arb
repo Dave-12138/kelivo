@@ -9439,6 +9439,9 @@
   "@assistantEditVariableDatetime": {
     "description": "Variable list entry for the combined date-and-time placeholder, shown with its token {cur_datetime}."
   },
+  "@assistantEditVariableTimestamp": {
+    "description": "Variable list entry for the Unix timestamp placeholder, shown with its token {cur_timestamp}."
+  },
   "@assistantEditVariableModelId": {
     "description": "Variable list entry for the current model ID placeholder, shown with its token {model_id}."
   },

@@ -1280,6 +1280,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get assistantEditVariableDatetime => '날짜 및 시간';
 
   @override
+  String get assistantEditVariableTimestamp => '타임스탬프';
+
+  @override
   String get assistantEditVariableModelId => '모델 ID';
 
   @override

@@ -2500,7 +2500,7 @@ abstract class AppLocalizations {
   /// **'Datetime'**
   String get assistantEditVariableDatetime;
 
-  /// No description provided for @assistantEditVariableTimestamp.
+  /// Variable list entry for the Unix timestamp placeholder, shown with its token {cur_timestamp}.
   ///
   /// In en, this message translates to:
   /// **'Timestamp'**
